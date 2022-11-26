@@ -1,0 +1,8 @@
+# .npmignore
+node_modules
+src
+dist
+.gitignore
+package-lock.json
+tsconfig.json
+yarn.lock
