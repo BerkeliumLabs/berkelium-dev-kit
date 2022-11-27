@@ -122,6 +122,7 @@ export class BerkeliumClassificationTrain {
         }));
 
         model.compile({ loss: 'categoricalCrossentropy', optimizer: tf.train.sgd(0.1), metrics: ['acc'] });
+
         Promise.all([
             this.encodeData(this.INTENT_PATTERNS)
         ]).then((encodedData) => {
@@ -150,7 +151,7 @@ export class BerkeliumClassificationTrain {
                 const finalAcc = info.history.acc[infoIndex].toFixed(5);
 
                 console.log(
-                    chalk.bgYellow.black(`\n BerkeliumLabs NLP Core `) +
+                    chalk.bgYellow.black(`\n Berkelium `) +
                     chalk.greenBright(' Training Completed at ==>') +
                     chalk.yellowBright(` Loss: ${finalLoss}`) +
                     chalk.green(` | Accuracy: ${finalAcc}\n`)

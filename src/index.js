@@ -4,13 +4,13 @@ import { BerkeliumClassificationTrain } from './modules/train.js';
 import { BerkeliumClassificationPredict } from './modules/predict.js';
 import * as fs from 'fs';
 import chalk from 'chalk';
-const version = process.env.npm_package_version;
+import pkg from './package.json' assert { type: "json" };
 
 const bkClassTrain = new BerkeliumClassificationTrain();
 const bkClassPredict = new BerkeliumClassificationPredict();
 
 // Welcome Message
-console.log(chalk.bgYellow.black(`\n BerkeliumLabs NLP Core: v${version} \n`));
+console.log(chalk.bgYellow.black(`\n Berkelium: v${pkg.version} \n`));
 
 let TF_MODEL;
 let RESPONSE_DATA;
@@ -44,7 +44,7 @@ export const bkLabs = {
             TF_MODEL = await tf.loadLayersModel(modelUrl);
             const metadataFile = fs.readFileSync(metadataUrl);
             RESPONSE_DATA = JSON.parse(metadataFile);
-            
+
             //console.log(JSON.parse(metadataFile), RESPONSE_DATA);
             callBackFunction();
 
