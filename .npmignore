@@ -1,7 +1,8 @@
 # .npmignore
 node_modules
 src
-dist
+test
+rollup.config.js
 .gitignore
 package-lock.json
 tsconfig.json
