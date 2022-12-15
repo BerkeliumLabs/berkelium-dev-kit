@@ -1,5 +1,7 @@
 const { berkelium } = require('../dist/berkelium.cjs');
 
-test('test', () => {
-    console.log(berkelium.classification.train());
+test('Tokenizer', async () => {
+    const answer = await berkelium.tokenize('hello, how are you?');
+
+    console.log(answer);
 });

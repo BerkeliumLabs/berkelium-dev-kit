@@ -14,7 +14,6 @@
     "build": "npm run build:types && npm run build:js",
     "clean": "rimraf dist",
     "test:publish": "npm publish --dry-run",
-    "test:esm": "node test/index.test.js",
     "test": "jest --verbose ./test"
   },
   "dependencies": {

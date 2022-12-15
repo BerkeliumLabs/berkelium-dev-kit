@@ -1,7 +1,9 @@
+import { Tokenizer } from './core/tokenizer';
+
 export const berkelium = {
-    classification: {
-        train: () => {
-            console.log('Namo Buddhaya!')
-        }
+    tokenize: (sentence: string) => {
+        const bkTokenizer = new Tokenizer();
+
+        return bkTokenizer.initialize(sentence);
     }
 }
