@@ -1,7 +1,15 @@
 import { berkelium } from '../dist/berkelium.esm';
 
+let answer = [];
+
 test('Tokenizer', async () => {
-    const answer = await berkelium.tokenize('hello, how  are you? It\'s 10');
+    answer = await berkelium.tokenize('hello, how  are you? It\'s 10');
 
     console.log(answer);
+});
+
+test('Encoder', async () => {
+    const encodes = await berkelium.encode(answer);
+
+    console.log(encodes);
 });
