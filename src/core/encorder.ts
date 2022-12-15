@@ -23,10 +23,22 @@ export class TextEncorder {
     private generateEncodings(word: string) {
         const encodedToken = new Promise((resolve, reject) => {
             try {
-                const encoding = []
-                for(let index = 0; index < word.length; index++) {
-                    const charID = ENGLISH_CHAR[word.charAt(index)];
-                    encoding.push(charID)
+                const encoding = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1];
+                let word_length = encoding.length;
+                if (word.length <= word_length) {
+                    word_length = word.length;
+                }
+                for(let index = 0; index < word_length; index++) {
+                    let charID = -1;
+                    const hasNumber = parseInt(word.charAt(index));
+                    // console.log(typeof hasNumber);
+                    if (!isNaN(hasNumber)) {
+                        charID = parseInt(word.charAt(index));
+                    } else {
+                        charID = ENGLISH_CHAR[word.charAt(index)];
+                    }
+                    // console.log(charID, word.charAt(index), typeof charID);
+                    encoding[index] = charID;
                 }
                 resolve(encoding);               
             } catch (error) {

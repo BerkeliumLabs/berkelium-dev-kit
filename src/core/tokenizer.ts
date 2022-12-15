@@ -61,7 +61,7 @@ export class Tokenizer {
                 for(let index = 0; index < word.length; index++) {
                     const isChar = ENGLISH_CHAR.hasOwnProperty(word.charAt(index));
                     const hasNumber = parseInt(word.charAt(index));
-                    if(!isChar && (typeof hasNumber) !== 'number') {
+                    if(!isChar && isNaN(hasNumber)) {
                         // console.log(index, hasNumber, typeof hasNumber);
                         resolve(false);
                     }
