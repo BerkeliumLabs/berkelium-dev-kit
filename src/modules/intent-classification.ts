@@ -18,7 +18,8 @@ export class IntentClassification {
     private TRAINING_LABELS: Array<string> = [];
 
     private TRAIN_EPOCHS: number = 10;
-    private INPUT_LENGTH: number = 240;
+    private INPUT_LENGTH: number = 1;
+    private VOCABULARY: any;
 
     constructor(datasetPath: string, outputPath: string) {
         this.__DSPATH = datasetPath;
@@ -28,11 +29,11 @@ export class IntentClassification {
     async init() {
         try {
             const rawData = fs.readFileSync(this.__DSPATH);
-            this.TRAINING_DATA = JSON.parse(rawData.toString()) as Array<any>;
+            const rawDataset = JSON.parse(rawData.toString()) as Array<any>;
 
             console.log(chalk.bgGreen.black(' info ') + chalk.greenBright(' Data Loaded Successfully\n'));
 
-            this.prepareTrainingData(this.TRAINING_DATA);
+            this.prepareTrainingData(rawDataset);
 
         } catch (error) {
             console.log(chalk.red(' error ') + chalk.redBright(' Data read error: '), error);
@@ -51,11 +52,14 @@ export class IntentClassification {
                 if (!this.TRAINING_LABELS.includes(dataObj[1])) {
                     this.TRAINING_LABELS.push(dataObj[1]);
                 }
+                this.TRAINING_DATA.push(dataObj[0]);
             });
 
-            Promise.all(intentLabels).then(() => {
+            Promise.all(intentLabels).then(async () => {
+                await this.generateVocabulary(this.TRAINING_DATA.flat());
+
                 const encodedDS = trainingData.map(async (dataObj: Array<string>) => {
-                    const patternEmbeddings = await this.getEmbeddings(dataObj[0]);
+                    const patternEmbeddings: any = await this.getEmbeddings(dataObj[0]);
                     const classEmbeddings = await this.classOneHotEncode(dataObj[1]);
                     this.INTENT_PATTERNS.push(patternEmbeddings);
                     this.INTENT_CLASSES.push(classEmbeddings);
@@ -63,8 +67,6 @@ export class IntentClassification {
                 });
 
                 Promise.all(encodedDS).then(() => {
-                    // console.log(`sample encoding ${this.INTENT_PATTERNS[5]} : ${this.INTENT_PATTERNS[5].length}`);
-                    // console.log(this.INTENT_PATTERNS.length, this.INTENT_CLASSES.length);
                     this.trainModel();
                 });
             });
@@ -74,43 +76,60 @@ export class IntentClassification {
         }
     }
 
+    private generateVocabulary(textData: Array<string>) {
+        const bkTokenizer = new Tokenizer();
+        const tokenCollection: Array<any> = [];
+
+        return new Promise((resolve)=>{
+            const getVocab = textData.map(async (sentence)=>{
+                let tokens = await bkTokenizer.initialize(sentence);
+                tokenCollection.push(tokens);
+            });
+            
+            Promise.all(getVocab).then(async()=>{
+                const bkEncoder = new TextEncorder();
+                this.VOCABULARY = await bkEncoder.encode(tokenCollection.flat());
+                console.log(Object.keys(this.VOCABULARY).length);
+                resolve(this.VOCABULARY);
+            });
+        });
+    }
+
     private async getEmbeddings(sentence: string) {
         const bkTokenizer = new Tokenizer();
-        const bkEncoder = new TextEncorder();
 
         let tokens = await bkTokenizer.initialize(sentence);
-        const embeddings = await bkEncoder.encode(tokens);
-        let tempEmbedding = embeddings.flat();
-        if (tempEmbedding.length < this.INPUT_LENGTH) {
-            const numPad = this.INPUT_LENGTH - tempEmbedding.length;
-            const zeroPads = tf.zeros([1, numPad]).arraySync() as Array<number>;
-            const finalEmbedding = tempEmbedding.concat(zeroPads[0]);
-            
-            // console.log(`pad?: ${numPad} => ${tempEmbedding.length} ${typeof zeroPads}`);
-            return finalEmbedding;
-        } else {
-            const finalEmbedding = tempEmbedding.slice(0, this.INPUT_LENGTH);
-            return finalEmbedding;
+
+        if (this.INPUT_LENGTH < tokens.length) {
+            this.INPUT_LENGTH = tokens.length;
         }
 
-        // console.log(`final?: ${tempEmbedding}`);
+        const embedding = await this.assignTokenNumber(tokens);
 
-        /* return new Promise(async(resolve, reject) => {
+        return embedding;
+    }
+
+    private assignTokenNumber(tokens: Array<string>) {
+
+        const numPad = this.INPUT_LENGTH - tokens.length;
+        const zeroPads = tf.zeros([1, numPad]).arraySync() as Array<number>;
+
+        // console.log(`pad?: ${numPad} => ${tokens.length} ${typeof zeroPads}`);
+        return new Promise((resolve, reject) => {
             try {
-                let sentenceEncode = tf.zeros([1, 24]).dataSync();
-                if(tokens.length > 24) {
-                    tokens = tokens.slice(0, 24);
-                }
-                const embeddings = await bkEncoder.encode(tokens);
-                embeddings.map((token, index) => {
-                    sentenceEncode[index] = token;
-                    resolve(sentenceEncode);
+                let finalEmbedding: Array<any> = [];
+                const mapToken = tokens.map((word) => {
+                    finalEmbedding.push(this.VOCABULARY[word]);
                 });
-            } catch (error) {
-                reject(error);
-            }
-        }); */
 
+                Promise.all(mapToken).then(() => {
+                    finalEmbedding = finalEmbedding.concat(zeroPads[0]);
+                    resolve(finalEmbedding);
+                }).catch((err) => { reject(err) });
+            } catch (error) {
+                console.log('Tokenizing:', error);
+            }
+        });
     }
 
     private classOneHotEncode(className: string) {
@@ -123,16 +142,18 @@ export class IntentClassification {
 
     private async trainModel() {
 
-        const trainX = tf.data.array([this.INTENT_PATTERNS]);
+        const trainX = tf.data.array(this.INTENT_PATTERNS);
         const trainY = tf.data.array(this.INTENT_CLASSES);
         const length = this.TRAINING_LABELS.length;
         const batchSize = this.INTENT_PATTERNS.length;
         const xyDataset = tf.data.zip({ xs: trainX, ys: trainY }).batch(batchSize);
-        const inputShape = [batchSize, this.INPUT_LENGTH];
+        const inputShape = [22];
+
+        console.log(xyDataset);
 
         const embeddings = tf.layers.embedding({
-            inputDim: 36,
-            outputDim: 8,
+            inputDim: Object.keys(this.VOCABULARY).length,
+            outputDim: 16,
             inputShape: inputShape,
             name: 'bkEmbed',
             maskZero: true
@@ -140,16 +161,23 @@ export class IntentClassification {
 
         const model = tf.sequential();
         model.add(embeddings);
+        /* model.add(tf.layers.dense({ inputShape: inputShape, units: 64, activation: 'relu' }));
+        model.add(tf.layers.dropout({ rate: 0.5 })); */
+        // model.add(tf.layers.globalAveragePooling1d());
         model.add(tf.layers.dense({ units: 64, activation: 'relu' }));
-        model.add(tf.layers.dropout({ rate: 0.5 }));
+        model.add(tf.layers.dense({ units: 64, activation: 'relu' }));
+        // model.add(tf.layers.dropout({ rate: 0.5 }));
         model.add(tf.layers.dense({ units: length, activation: 'softmax' }));
         model.compile({ optimizer: 'adam', loss: 'categoricalCrossentropy', metrics: ['accuracy'] });
         // console.log(trainX.shape, this.INTENT_PATTERNS[5], this.INTENT_PATTERNS[5].length);
+
+        model.summary()
+
         try {
             await model.fitDataset(xyDataset, {
                 epochs: this.TRAIN_EPOCHS,
                 verbose: 1,
-                callbacks: tf.callbacks.earlyStopping({monitor: 'acc'})
+                callbacks: tf.callbacks.earlyStopping({ monitor: 'acc' })
             }).then((info: any) => {
 
                 const infoIndex = info.epoch.length - 1;

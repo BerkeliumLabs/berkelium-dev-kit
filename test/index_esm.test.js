@@ -7,7 +7,7 @@ const modelUrl = 'file://D:/BerkeliumLabs/project/nlp-test/models/model.json';
 const metadata = 'models/model_metadata.json';
 
 test('Tokenizer', async () => {
-    answer = await berkelium.tokenize('hello, how  are you? It\'s 10');
+    answer = await berkelium.tokenize('hello, how  are you? It\'s 10, hello?');
 
     console.log(answer);
 });
