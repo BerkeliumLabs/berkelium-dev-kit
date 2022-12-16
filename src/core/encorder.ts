@@ -23,13 +23,13 @@ export class TextEncorder {
     private generateEncodings(word: string) {
         const encodedToken = new Promise((resolve, reject) => {
             try {
-                const encoding = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1];
+                const encoding = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                 let word_length = encoding.length;
                 if (word.length <= word_length) {
                     word_length = word.length;
                 }
                 for(let index = 0; index < word_length; index++) {
-                    let charID = -1;
+                    let charID = 0;
                     const hasNumber = parseInt(word.charAt(index));
                     // console.log(typeof hasNumber);
                     if (!isNaN(hasNumber)) {
