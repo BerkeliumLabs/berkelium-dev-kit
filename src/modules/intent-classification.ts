@@ -17,7 +17,7 @@ export class IntentClassification {
     private TRAINING_DATA: Array<any> = [];
     private TRAINING_LABELS: Array<string> = [];
 
-    private TRAIN_EPOCHS: number = 10;
+    private TRAIN_EPOCHS: number = 20;
     private INPUT_LENGTH: number = 23;
     private VOCABULARY: any;
 
@@ -163,9 +163,8 @@ export class IntentClassification {
 
         const model = tf.sequential();
         model.add(embeddings);
-        /* model.add(tf.layers.dense({ inputShape: inputShape, units: 64, activation: 'relu' }));
-        model.add(tf.layers.dropout({ rate: 0.5 })); */
         // model.add(tf.layers.globalAveragePooling1d());
+        // model.add(tf.layers.bidirectional({ layer: tf.layers.lstm({ units: 64 }) }));
         model.add(tf.layers.flatten());
         model.add(tf.layers.dense({ units: 64, activation: 'relu' }));
         // model.add(tf.layers.dropout({ rate: 0.5 }));
@@ -205,7 +204,7 @@ export class IntentClassification {
 
         try {
             fs.mkdirSync(modelOutFolder, { recursive: true });
-            await model.save(fileSystem(modelOutFolder));
+            await model.save(fileSystem(modelOutFolder)); // file://./model-1a
 
             const metaOutPath = path.resolve(modelOutFolder, 'metadata.json');
             const metadataStr = JSON.stringify(this.TRAINING_LABELS);
