@@ -9,6 +9,10 @@ const extensions = [
 ];
 
 const name = 'berkelium';
+const globals = {
+  '@tensorflow/tfjs': 'tf',
+  '@tensorflow/tfjs-node': 'tf',
+};
 
 export default {
   input: './src/index.ts',
@@ -18,7 +22,9 @@ export default {
   external: [
     '@tensorflow/tfjs',
     '@tensorflow/tfjs-node',
-    'chalk'
+    'chalk',
+    'fs',
+    'path'
   ],
 
   plugins: [
@@ -47,12 +53,9 @@ export default {
   }, {
     file: pkg.browser,
     format: 'umd',
-    name,
+    name: name,
 
     // https://rollupjs.org/guide/en/#outputglobals
-    globals: {
-      '@tensorflow/tfjs': 'tf',
-      '@tensorflow/tfjs-node': 'tf',
-    },
+    globals: globals,
   }],
 };
