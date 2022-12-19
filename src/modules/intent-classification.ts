@@ -18,7 +18,7 @@ export class IntentClassification {
     private TRAINING_LABELS: Array<string> = [];
 
     private TRAIN_EPOCHS: number = 10;
-    private INPUT_LENGTH: number = 1;
+    private INPUT_LENGTH: number = 23;
     private VOCABULARY: any;
 
     constructor(datasetPath: string, outputPath: string) {
@@ -63,7 +63,7 @@ export class IntentClassification {
                     const classEmbeddings = await this.classOneHotEncode(dataObj[1]);
                     this.INTENT_PATTERNS.push(patternEmbeddings);
                     this.INTENT_CLASSES.push(classEmbeddings);
-                    // console.log(`sample encoding?: ${patternEmbeddings.length}`);
+                    console.log(`sample encoding?: ${patternEmbeddings.length}`);
                 });
 
                 Promise.all(encodedDS).then(() => {
@@ -80,13 +80,13 @@ export class IntentClassification {
         const bkTokenizer = new Tokenizer();
         const tokenCollection: Array<any> = [];
 
-        return new Promise((resolve)=>{
-            const getVocab = textData.map(async (sentence)=>{
+        return new Promise((resolve) => {
+            const getVocab = textData.map(async (sentence) => {
                 let tokens = await bkTokenizer.initialize(sentence);
                 tokenCollection.push(tokens);
             });
-            
-            Promise.all(getVocab).then(async()=>{
+
+            Promise.all(getVocab).then(async () => {
                 const bkEncoder = new TextEncorder();
                 this.VOCABULARY = await bkEncoder.encode(tokenCollection.flat());
                 console.log(Object.keys(this.VOCABULARY).length);
@@ -142,20 +142,22 @@ export class IntentClassification {
 
     private async trainModel() {
 
-        const trainX = tf.data.array(this.INTENT_PATTERNS);
-        const trainY = tf.data.array(this.INTENT_CLASSES);
-        const length = this.TRAINING_LABELS.length;
-        const batchSize = this.INTENT_PATTERNS.length;
-        const xyDataset = tf.data.zip({ xs: trainX, ys: trainY }).batch(batchSize);
-        const inputShape = [22];
+        console.log(this.INPUT_LENGTH);
 
-        console.log(xyDataset);
+        const trainX = tf.stack(this.INTENT_PATTERNS.map(x => tf.tensor1d(x)));
+        const trainY = tf.stack(this.INTENT_CLASSES.map(x => tf.tensor1d(x)));
+        const length = this.TRAINING_LABELS.length;
+        // const batchSize = this.INTENT_PATTERNS.length;
+        // const xyDataset = tf.data.zip({ xs: trainX, ys: trainY }).batch(batchSize);
+        const inputShape = [this.INPUT_LENGTH];
+
+        console.log(`dataset: ${trainX.shape}`);
 
         const embeddings = tf.layers.embedding({
             inputDim: Object.keys(this.VOCABULARY).length,
             outputDim: 16,
-            inputShape: inputShape,
             name: 'bkEmbed',
+            inputShape: inputShape,
             maskZero: true
         });
 
@@ -164,17 +166,17 @@ export class IntentClassification {
         /* model.add(tf.layers.dense({ inputShape: inputShape, units: 64, activation: 'relu' }));
         model.add(tf.layers.dropout({ rate: 0.5 })); */
         // model.add(tf.layers.globalAveragePooling1d());
-        model.add(tf.layers.dense({ units: 64, activation: 'relu' }));
+        model.add(tf.layers.flatten());
         model.add(tf.layers.dense({ units: 64, activation: 'relu' }));
         // model.add(tf.layers.dropout({ rate: 0.5 }));
-        model.add(tf.layers.dense({ units: length, activation: 'softmax' }));
+        model.add(tf.layers.dense({ units: length, activation: 'sigmoid' }));
         model.compile({ optimizer: 'adam', loss: 'categoricalCrossentropy', metrics: ['accuracy'] });
         // console.log(trainX.shape, this.INTENT_PATTERNS[5], this.INTENT_PATTERNS[5].length);
 
         model.summary()
 
         try {
-            await model.fitDataset(xyDataset, {
+            await model.fit(trainX, trainY, {
                 epochs: this.TRAIN_EPOCHS,
                 verbose: 1,
                 callbacks: tf.callbacks.earlyStopping({ monitor: 'acc' })
@@ -205,9 +207,12 @@ export class IntentClassification {
             fs.mkdirSync(modelOutFolder, { recursive: true });
             await model.save(fileSystem(modelOutFolder));
 
-            const metaOutPath = path.resolve(modelOutFolder, 'model_metadata.json');
+            const metaOutPath = path.resolve(modelOutFolder, 'metadata.json');
             const metadataStr = JSON.stringify(this.TRAINING_LABELS);
+            const vocabOutPath = path.resolve(modelOutFolder, 'vocab.json');
+            const vocab = JSON.stringify(this.VOCABULARY);
             fs.writeFileSync(metaOutPath, metadataStr, { encoding: 'utf8' });
+            fs.writeFileSync(vocabOutPath, vocab, { encoding: 'utf8' });
 
             console.log(
                 chalk.bgGreen.black(' info ') +

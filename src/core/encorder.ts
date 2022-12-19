@@ -36,7 +36,7 @@ export class TextEncorder {
                     encodedTokens.map((word, index)=>{
                         vocab[word] = index + 1;
                     });
-                    console.log(encodedTokens);
+                    // console.log(encodedTokens);
                 });
         
                 resolve(vocab);

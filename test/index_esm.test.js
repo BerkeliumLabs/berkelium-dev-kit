@@ -15,7 +15,7 @@ test('Tokenizer', async () => {
 test('Encoder', async () => {
     const encodes = await berkelium.encode(answer);
 
-    console.log(encodes);
+    console.log(encodes['you']);
     console.log(encodes);
 });
 
