@@ -12,6 +12,7 @@ const name = 'berkelium';
 const globals = {
   '@tensorflow/tfjs': 'tf',
   '@tensorflow/tfjs-node': 'tf',
+  'chalk': 'chalk'
 };
 
 export default {

@@ -2,8 +2,9 @@ import { fileSystem } from '@tensorflow/tfjs-node/dist/io/file_system.js';
 import * as fs from 'fs';
 import * as path from 'path';
 import chalk from 'chalk';
+import { DATASET } from '../core/preprocess';
 
-const __OUTDIR = '';
+const __OUTDIR = 'model';
 // const __DSPATH: string = '';
 
 export const bk_utils = {
@@ -20,7 +21,7 @@ export const bk_utils = {
         return rawDataset; 
     },
 
-    save: async (model: any) => {
+    save: async (model: any, dataObj: DATASET) => {
         const timeStamp = Date.now();
         const modelOutFolder = path.resolve(__OUTDIR, timeStamp + '/');
 
@@ -29,9 +30,9 @@ export const bk_utils = {
             await model.save(fileSystem(modelOutFolder)); // file://./model-1a
 
             const metaOutPath = path.resolve(modelOutFolder, 'metadata.json');
-            const metadataStr = JSON.stringify(model.TRAINING_LABELS);
+            const metadataStr = JSON.stringify(dataObj.labels);
             const vocabOutPath = path.resolve(modelOutFolder, 'vocab.json');
-            const vocab = JSON.stringify(model.VOCABULARY);
+            const vocab = JSON.stringify(dataObj.vocab);
             fs.writeFileSync(metaOutPath, metadataStr, { encoding: 'utf8' });
             fs.writeFileSync(vocabOutPath, vocab, { encoding: 'utf8' });
 

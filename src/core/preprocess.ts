@@ -3,6 +3,14 @@ import { Tokenizer } from '../core/tokenizer';
 import { TextEncorder } from '../core/encorder';
 import chalk from 'chalk';
 
+export interface DATASET {
+    x: Array<any>,
+    y: Array<any>,
+    labels: Array<string>,
+    vocab: any,
+    length: number
+}
+
 export class Preprocessor {
 
     private RAW_DATA: Array<any> = [];
@@ -20,7 +28,13 @@ export class Preprocessor {
     }
 
     async init() {
-        let trainingDataset = {};
+        let trainingDataset: DATASET= {
+            x: this.TRAINING_DATA,
+            y: this.INTENT_CLASSES,
+            labels: this.TRAINING_LABELS,
+            vocab: this.VOCABULARY,
+            length: this.INPUT_LENGTH
+        };
         try {
             await this.prepareTrainingData();
             await this.generateVocabulary(this.CORPUS_DATA.flat());
@@ -90,11 +104,11 @@ export class Preprocessor {
             const encodedDS = this.RAW_DATA.map(async (dataObj: Array<string>) => {
                 const patternEmbeddings = await bkTokenizer.initialize(dataObj[0]);
                 const classEmbeddings = await this.classOneHotEncode(dataObj[1]);
-    
+
                 if (this.INPUT_LENGTH < patternEmbeddings.length) {
                     this.INPUT_LENGTH = patternEmbeddings.length;
                 }
-    
+
                 this.INTENT_PATTERNS.push(patternEmbeddings);
                 this.INTENT_CLASSES.push(classEmbeddings);
                 // console.log(`sample encoding?: ${patternEmbeddings.length}`);
@@ -122,7 +136,7 @@ export class Preprocessor {
                         finalEmbedding.push(this.VOCABULARY[word]);
                         // console.log(word);
                     });
-    
+
                     Promise.all(mapToken).then(() => {
                         this.TRAINING_DATA.push(finalEmbedding.concat(zeroPads[0]));
                         // console.log(this.TRAINING_DATA);
