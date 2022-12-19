@@ -12,6 +12,7 @@
     "build:types": "tsc --emitDeclarationOnly",
     "build:js": "rollup -c",
     "build": "npm run build:types && npm run build:js",
+    "build:utils:node": "rollup -c node.utils.js",
     "clean": "rimraf dist",
     "test:publish": "npm publish --dry-run",
     "test": "jest --verbose --detectOpenHandles ./test"

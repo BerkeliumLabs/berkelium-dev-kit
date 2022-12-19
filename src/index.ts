@@ -1,5 +1,6 @@
 import { Tokenizer } from './core/tokenizer';
 import { TextEncorder } from './core/encorder';
+import { Preprocessor } from './core/preprocess';
 import { IntentClassification } from './modules/intent-classification';
 
 import chalk from 'chalk';
@@ -15,13 +16,19 @@ export const berkelium = {
 
         return encodings.encode(tokens);
     },
+    preprocess: async (rawData: Array<any>) => {
+        const preProcessor = new Preprocessor(rawData);
+        const preProcessedData = await preProcessor.init();
+
+        return preProcessedData;
+    },
     classification: {
         intent: {
-            train: (datasetPath: string, outputPath: string) => {
+            train: () => {
                 try {
-                    const bkTrain = new IntentClassification(datasetPath, outputPath);
+                    const bkTrain = new IntentClassification();
 
-                    bkTrain.init();
+                    bkTrain.trainModel();
                     
                 } catch (error) {
                     console.log(chalk.red(' error ') + chalk.redBright(' Data read error: '), error);
