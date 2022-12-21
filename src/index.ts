@@ -2,6 +2,7 @@ import { Tokenizer } from './core/tokenizer';
 import { TextEncorder } from './core/encorder';
 import { DATASET, Preprocessor } from './core/preprocess';
 import { IntentClassification } from './modules/intent-classification';
+import { IntentPrediction } from './modules/intent-prediction';
 
 import chalk from 'chalk';
 
@@ -35,6 +36,11 @@ export const berkelium = {
                 } catch (error) {
                     console.log(chalk.red(' error ') + chalk.redBright(' Training failed: '), error);
                 }
+            },
+            loadModel: (modelURL: string) => {
+                const newModel = new IntentPrediction(modelURL);
+
+                return newModel;
             }
         }
     }

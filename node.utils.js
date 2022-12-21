@@ -44,10 +44,10 @@ export default {
   ],
 
   output: [{
-    file: './dist/utils/utils.cjs.js',
+    file: './dist/utils/utils.cjs',
     format: 'cjs',
   }, {
-    file: './dist/utils/utils.esm.js',
+    file: './dist/utils/utils.mjs',
     format: 'es',
   },],
 };
