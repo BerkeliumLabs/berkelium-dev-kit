@@ -1,5 +1,4 @@
 
-document.onload = () => {
-    const berkelium = Promise.all(berkelium);
+document.onclick = () => {
     console.log(berkelium);
 }

@@ -12,13 +12,13 @@ export const bk_utils = {
         let rawDataset;
         try {
             const rawData = fs.readFileSync(datasetPath);
-            rawDataset = JSON.parse(rawData.toString()) as Array<any>;           
+            rawDataset = JSON.parse(rawData.toString()) as Array<any>;
         } catch (error) {
             console.log('Read Err:', error);
             rawDataset = undefined;
         }
 
-        return rawDataset; 
+        return rawDataset;
     },
 
     save: async (model: any, dataObj: DATASET) => {
@@ -30,11 +30,14 @@ export const bk_utils = {
             await model.save(fileSystem(modelOutFolder)); // file://./model-1a
 
             const metaOutPath = path.resolve(modelOutFolder, 'metadata.json');
-            const metadataStr = JSON.stringify(dataObj.labels);
-            const vocabOutPath = path.resolve(modelOutFolder, 'vocab.json');
-            const vocab = JSON.stringify(dataObj.vocab);
+            const metadataJSON = {
+                intents: dataObj.labels,
+                vocab: dataObj.vocab,
+                seq_len: dataObj.length
+            };
+
+            const metadataStr = JSON.stringify(metadataJSON);
             fs.writeFileSync(metaOutPath, metadataStr, { encoding: 'utf8' });
-            fs.writeFileSync(vocabOutPath, vocab, { encoding: 'utf8' });
 
             console.log(
                 chalk.bgGreen.black(' info ') +

@@ -12,7 +12,8 @@ const name = 'berkelium';
 const globals = {
   '@tensorflow/tfjs': 'tf',
   '@tensorflow/tfjs-node': 'tf',
-  'chalk': 'chalk'
+  'chalk': 'chalk',
+  'node-fetch': 'fetch'
 };
 
 export default {
@@ -24,6 +25,7 @@ export default {
     '@tensorflow/tfjs',
     '@tensorflow/tfjs-node',
     'chalk',
+    'node-fetch'
   ],
 
   plugins: [

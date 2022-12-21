@@ -6,6 +6,8 @@ import { IntentPrediction } from './modules/intent-prediction';
 
 import chalk from 'chalk';
 
+let newModel: IntentPrediction;
+
 export const berkelium = {
     tokenize: (sentence: string) => {
         const bkTokenizer = new Tokenizer();
@@ -37,9 +39,9 @@ export const berkelium = {
                     console.log(chalk.red(' error ') + chalk.redBright(' Training failed: '), error);
                 }
             },
-            loadModel: (modelURL: string) => {
-                const newModel = new IntentPrediction(modelURL);
-
+            loadModel: async (modelURL: string) => {
+                newModel = new IntentPrediction(modelURL);
+                await newModel.loadModel();
                 return newModel;
             }
         }
