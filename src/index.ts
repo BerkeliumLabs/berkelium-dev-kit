@@ -25,25 +25,23 @@ export const berkelium = {
 
         return preProcessedData;
     },
-    classification: {
-        intent: {
-            train: async (dataset: DATASET) => {
-                try {
-                    const bkTrain = new IntentClassification(dataset);
+    multiClass: {
+        train: async (dataset: DATASET) => {
+            try {
+                const bkTrain = new IntentClassification(dataset);
 
-                    const model = await bkTrain.train();
+                const model = await bkTrain.train();
 
-                    return model;
-                    
-                } catch (error) {
-                    console.log(chalk.red(' error ') + chalk.redBright(' Training failed: '), error);
-                }
-            },
-            loadModel: async (modelURL: string) => {
-                newModel = new IntentPrediction(modelURL);
-                await newModel.loadModel();
-                return newModel;
+                return model;
+
+            } catch (error) {
+                console.log(chalk.red(' error ') + chalk.redBright(' Training failed: '), error);
             }
+        },
+        loadModel: async (modelURL: string) => {
+            newModel = new IntentPrediction(modelURL);
+            await newModel.loadModel();
+            return newModel;
         }
     }
 }

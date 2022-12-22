@@ -4,7 +4,7 @@ import * as path from 'path';
 import chalk from 'chalk';
 import { DATASET } from '../core/preprocess';
 
-const __OUTDIR = 'model';
+const __OUTDIR = 'models';
 // const __DSPATH: string = '';
 
 export const bk_utils = {
