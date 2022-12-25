@@ -12,7 +12,7 @@ export class IntentClassification {
     private TRAINING_LABELS: Array<string> = [];
 
     private TRAIN_EPOCHS: number = 20;
-    private INPUT_LENGTH: number = 23;
+    private INPUT_LENGTH: number = 10;
     private VOCABULARY: any;
 
     constructor(dataset: DATASET) {

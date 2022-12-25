@@ -4,10 +4,16 @@ import * as path from 'path';
 import chalk from 'chalk';
 import { DATASET } from '../core/preprocess';
 
-const __OUTDIR = 'model';
+const __OUTDIR = 'models';
 // const __DSPATH: string = '';
 
 export const bk_utils = {
+    /**
+     * This is a utility function used to read files (`.json` files).
+     * This is used to load training data from `.json` files.
+     * @param datasetPath `string` Path to `.json` file.
+     * @returns `JSON` returns data in JSON format.
+     */
     read: (datasetPath: string) => {
         let rawDataset;
         try {
@@ -20,7 +26,11 @@ export const bk_utils = {
 
         return rawDataset;
     },
-
+    /**
+     * This is a utility function used to save a model along with other necessary data.
+     * @param model `MODEL` The model object return by `loadModel` function.
+     * @param dataObj `DATASET` The dataset object return by `preprocess` function.
+     */
     save: async (model: any, dataObj: DATASET) => {
         const timeStamp = Date.now();
         const modelOutFolder = path.resolve(__OUTDIR, timeStamp + '/');

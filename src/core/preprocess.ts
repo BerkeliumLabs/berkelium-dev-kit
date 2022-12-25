@@ -20,7 +20,7 @@ export class Preprocessor {
     private TRAINING_DATA: Array<any> = [];
     private TRAINING_LABELS: Array<string> = [];
 
-    private INPUT_LENGTH: number = 23;
+    private INPUT_LENGTH: number = 10;
     private VOCABULARY: any;
 
     constructor(rawDataset: Array<any>) {
@@ -28,7 +28,7 @@ export class Preprocessor {
     }
 
     async init() {
-        let trainingDataset: DATASET= {
+        let trainingDataset: DATASET = {
             x: this.TRAINING_DATA,
             y: this.INTENT_CLASSES,
             labels: this.TRAINING_LABELS,
@@ -107,6 +107,7 @@ export class Preprocessor {
 
                 if (this.INPUT_LENGTH < patternEmbeddings.length) {
                     this.INPUT_LENGTH = patternEmbeddings.length;
+                    //console.log(patternEmbeddings.length);
                 }
 
                 this.INTENT_PATTERNS.push(patternEmbeddings);
@@ -138,7 +139,11 @@ export class Preprocessor {
                     });
 
                     Promise.all(mapToken).then(() => {
-                        this.TRAINING_DATA.push(finalEmbedding.concat(zeroPads[0]));
+                        if (numPad !== 0) {
+                            this.TRAINING_DATA.push(finalEmbedding.concat(zeroPads[0]));
+                        } else {
+                            this.TRAINING_DATA.push(finalEmbedding);
+                        }
                         // console.log(this.TRAINING_DATA);
                     }).catch((err) => {
                         console.log('Padding Error:', err);
