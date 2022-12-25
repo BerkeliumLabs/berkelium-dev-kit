@@ -1,6 +1,6 @@
 {
   "name": "berkelium",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Berkelium is an open-source natural language processing JavaScript library for intent classification and response retrieval for building chatbots.",
   "main": "dist/berkelium.cjs.js",
   "module": "dist/berkelium.esm.js",
