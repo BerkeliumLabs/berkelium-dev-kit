@@ -7,3 +7,7 @@ rollup.config.js
 package-lock.json
 tsconfig.json
 yarn.lock
+jest.config.js
+node.utils.js
+babel.config.js
+browser.config.js
