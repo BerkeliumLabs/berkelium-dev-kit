@@ -6,6 +6,8 @@
 
 # Berkelium
 
+Note: This Library is deprecated
+
 ![Berkelium Logo](assets/berkelium_logo.png)
 
 [**Berkelium**](https://github.com/BerkeliumLabs/berkelium-dev-kit) is an open-source natural language processing JavaScript library for intent classification and response retrieval for building chatbots. 
