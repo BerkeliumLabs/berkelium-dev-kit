@@ -3,10 +3,11 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Rate this package](https://badges.openbase.com/js/rating/berkelium.svg?token=eFryj7L0et4o3RCM+EFzqc4WfUfaPNvy477RdSHHd8k=)](https://openbase.com/js/berkelium?utm_source=embedded&amp;utm_medium=badge&amp;utm_campaign=rate-badge)
 [![Activity](https://img.shields.io/github/commit-activity/m/BerkeliumLabs/berkelium-dev-kit)](https://github.com/BerkeliumLabs/berkelium-dev-kit/pulse)
-
+[![No Maintenance Intended](http://unmaintained.tech/badge.svg)](http://unmaintained.tech/)
 # Berkelium
 
-<h1 style="color: red;">Note: This Library is deprecated</h1>
+> [!WARNING]  
+> This Library is deprecated.
 
 ![Berkelium Logo](assets/berkelium_logo.png)
 
