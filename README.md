@@ -6,7 +6,7 @@
 
 # Berkelium
 
-Note: This Library is deprecated
+<h1 style="color: red;">Note: This Library is deprecated</h1>
 
 ![Berkelium Logo](assets/berkelium_logo.png)
 
